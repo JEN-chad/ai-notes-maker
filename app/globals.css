@@ -1,26 +1,25 @@
+/* styles/globals.css or theme.css */
+
+/* Tailwind base import */
 @import "tailwindcss";
+@import "tw-animate-css"; /* Optional, remove if not using animations */
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
+/* Remove custom Matsu theme variants and variables */
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
+/* Base layer for global styles */
+@layer base {
+  * {
+    @apply outline-none; /* optional: remove any Matsu border/ring defaults */
+  }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+  body {
+    @apply bg-white text-black font-sans; /* default light mode */
+  }
+
+  /* Optional dark mode support using Tailwind's class strategy */
+  .dark body {
+    @apply bg-gray-900 text-white;
   }
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
-}
+/* You can add other global styles below as needed */
