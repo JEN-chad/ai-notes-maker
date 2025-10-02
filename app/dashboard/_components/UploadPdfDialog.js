@@ -11,18 +11,20 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
-import { useMutation } from "convex/react";
+import { useAction, useMutation } from "convex/react";
 import { api } from "@/convex/_generated/api";
 import { useState, useRef } from "react";
 import { Loader2Icon } from "lucide-react";
 import uuid4 from "uuid4";
 import { useUser } from "@clerk/nextjs";
+import axios from "axios";
 
 const UploadPdfDialog = ({ children }) => {
   // Convex mutations
   const generateUploadUrl = useMutation(api.fileStorage.generateUploadUrl);
   const addFileEntry = useMutation(api.fileStorage.addFileEntryToDb);
   const getFileUrl = useMutation(api.fileStorage.getFileUrl);
+  const embedDocument = useAction(api.myAction.ingest);
 
   // Local state
   const [file, setFile] = useState(null);
@@ -64,6 +66,15 @@ const UploadPdfDialog = ({ children }) => {
         fileUrl: fileUrl,
         createdBy: user?.primaryEmailAddress?.emailAddress,
       });
+
+      const ApiResponse = await axios.get('api/pdf-loader?pdfUrl='+fileUrl);
+      await embedDocument({
+        splitText: ApiResponse.data.splitterList,
+        fileId: fileId
+      });
+      // console.log(embedResult);
+      // console.log(ApiResponse.data.splitterList);
+
 
       // ✅ Reset everything after successful upload
       setFile(null);
