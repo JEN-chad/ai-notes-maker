@@ -11,10 +11,102 @@ import {
   AlignCenter,
   AlignRight,
   Type,
+  Sparkles,
 } from "lucide-react";
+import { useAction } from "convex/react";
+import { api } from "@/convex/_generated/api";
+import { useParams } from "next/navigation";
+import { chatSession } from "@/configs/AiModel";
 
 export const EditorExtension = ({ editor }) => {
   const [, setTick] = useState(0);
+  const [isLoading, setIsLoading] = useState(false);
+  const { id } = useParams();
+
+  const searchAI = useAction(api.myAction.search);
+
+  // const onAiClick = async () => {
+  //   const selectedText = editor.state.doc.textBetween(
+  //     editor.state.selection.from,
+  //     editor.state.selection.to,
+  //     " "
+  //   );
+  //   console.log("Selected text:", selectedText);
+  //   const result = await searchAI({
+  //     query: selectedText,
+  //     fileId: id,
+  //   });
+  //   const UnformattedAns = JSON.parse(result);
+  //   let allUnformattedAnswer = "";
+  //   UnformattedAns &&
+  //     UnformattedAns.forEach((item) => {
+  //       allUnformattedAnswer = allUnformattedAnswer + item.pageContent;
+  //     });
+
+  //     const PROMPT="For question: "+selectedText+" and with the given content as answer,"+
+  //     "please give appropriate answer in HTML format. The answer content is: "+allUnformattedAnswer
+
+  //     const AiModelResult = await chatSession.sendMessage(PROMPT);
+  //     console.log(AiModelResult.response.text())
+  //   };
+
+  const onAiClick = async () => {
+    const selectedText = editor.state.doc.textBetween(
+      editor.state.selection.from,
+      editor.state.selection.to,
+      " "
+    );
+    setIsLoading(true);
+    console.log("Selected text:", selectedText);
+
+    // Convex already returns an array of objects
+    const UnformattedAns = await searchAI({
+      query: selectedText,
+      fileId: id,
+    });
+
+    let allUnformattedAnswer = "";
+    UnformattedAns &&
+      UnformattedAns.forEach((item) => {
+        allUnformattedAnswer += item.pageContent + " ";
+      });
+
+    const PROMPT =
+      "You are an expert tutor preparing answers for exams. " +
+      "Answer the question as precisely and completely as possible. " +
+      "Analyze and infer logically to construct a full exam-ready answer, even if the content is partial or messy. " +
+      "Include both real-world examples (practical scenarios) and technical examples/tools (software, methods, or frameworks) wherever applicable. " +
+      "When giving examples, underline only the name of the tool, framework, or entity (e.g., <u>Python</u>, <u>Tableau</u>), not the full description. " +
+      "Format the answer in clean HTML using <p>, <b>, <i>, <u>, <ul>, <li>, <ol> tags. " +
+      "Highlight key terms or important phrases using <b> or <i>. " +
+      "Adjust answer style based on the type of question: if it asks for steps, use a numbered list; if it asks for examples, use bullet points; if it asks for explanation, use short paragraphs with key terms highlighted. " +
+      "Keep each point concise (2–3 sentences) and include one real-world and one technical example if applicable. " +
+      "Clearly indicate any inferred information as 'inferred from context'. " +
+      "Structure the answer to cover all key points for full marks. " +
+      "Do NOT mention the source or say 'based on the document'.\n\n" +
+      "Question: " +
+      selectedText +
+      "\n\n" +
+      "Document content: " +
+      allUnformattedAnswer +
+      "\n\n" +
+      "Requirements:\n" +
+      "1. Provide a concise, structured answer suitable for exams.\n" +
+      "2. Include both real-world and technical/tool examples for each step or concept, with only the names underlined.\n" +
+      "3. Use numbering and formatting for clarity.\n" +
+      "4. Mention limitations or inferred parts where content is incomplete.\n" +
+      "5. Avoid unnecessary repetition or filler text.";
+
+    const AiModelResult = await chatSession.sendMessage(PROMPT);
+    // console.log(await AiModelResult.response.text());
+    const finalAns = await AiModelResult.response.text();
+    setIsLoading(false);
+    console.log(finalAns);
+    const allText = editor.getHTML(); // Correct method
+    editor.commands.setContent(
+      allText + "<p><strong>Answer:</strong></p>" + finalAns
+    );
+  };
 
   useEffect(() => {
     if (!editor) return;
@@ -135,6 +227,17 @@ export const EditorExtension = ({ editor }) => {
         title="Align Right"
       >
         <AlignRight size={18} />
+      </button>
+      <button
+        onClick={() => onAiClick()}
+        className="hover:cursor-pointer hover:text-yellow-600"
+      >
+        <Sparkles size={18} />
+        {isLoading && (
+          <span className="ml-2 text-sm animate-pulse text-gray-500">
+            AI is thinking...
+          </span>
+        )}
       </button>
     </div>
   );
