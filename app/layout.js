@@ -24,11 +24,11 @@ export default function RootLayout({ children }) {
         <ClerkProviderWrapper>
           <Provider>{children}</Provider>
           <Toaster
-            position="top-center"
+            position="top-right"
             offset={65}
             toastOptions={{
               classNames: {
-                toast: "bg-white shadow-lg border border-gray-200 text-black",
+                toast: "!bg-white shadow-lg border border-gray-200 text-black",
               },
             }}
           />

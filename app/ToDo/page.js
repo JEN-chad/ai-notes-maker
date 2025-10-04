@@ -44,7 +44,7 @@ const ToDo = () => {
   return (
     <div className="flex h-screen">
       {/* Sidebar */}
-      <div className="w-[250px] border-r">
+      <div className="w-[250px] ">
         <SimpleSidebar />
       </div>
 
