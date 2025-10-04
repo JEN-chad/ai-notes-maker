@@ -52,7 +52,7 @@ export const GetFileRecord = query({
 
 export const GetUserFiles = query({
   args: {
-    userEmail: v.string(),
+    userEmail: v.optional(v.string()), // now optional
   },
   handler: async (ctx, args) => {
     if (!args?.userEmail) {

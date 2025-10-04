@@ -25,6 +25,7 @@ export const ingest = action({
       documents,
       new GoogleGenerativeAIEmbeddings({
         apiKey: process.env.GOOGLE_API_KEY,
+        // apiKey:'AIzaSyBUb42boZUuSx6inqY5CUm_ABc28jmNTvk',
         model: "text-embedding-004",
         taskType: TaskType.RETRIEVAL_DOCUMENT,
         title: "Document title",
@@ -81,6 +82,7 @@ export const search = action({
     const vectorStore = new ConvexVectorStore(
       new GoogleGenerativeAIEmbeddings({
         apiKey: process.env.GOOGLE_GEMINI_API_KEY,
+        // apiKey: 'AIzaSyAa5hCmcm2VHCLaCniq1hv2UlolN_lZ0Y0',
         model: "text-embedding-004",
         taskType: TaskType.RETRIEVAL_DOCUMENT,
         title: "Document title",
