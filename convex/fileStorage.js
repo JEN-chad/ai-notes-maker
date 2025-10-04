@@ -37,12 +37,73 @@ export const getFileUrl = mutation({
   },
 });
 
-export const GetFileRecord=query({
-  args:{
-    fileId:v.string()
+export const GetFileRecord = query({
+  args: {
+    fileId: v.string(),
   },
-  handler:async(ctx, args)=>{
-    const result = await ctx.db.query("pdfFiles").filter((q)=>q.eq(q.field('fileId'),args.fileId)).collect();
+  handler: async (ctx, args) => {
+    const result = await ctx.db
+      .query("pdfFiles")
+      .filter((q) => q.eq(q.field("fileId"), args.fileId))
+      .collect();
     return result[0];
-  }
-})
+  },
+});
+
+export const GetUserFiles = query({
+  args: {
+    userEmail: v.string(),
+  },
+  handler: async (ctx, args) => {
+    if (!args?.userEmail) {
+      return;
+    }
+    const result = await ctx.db
+      .query("pdfFiles")
+      .filter((q) => q.eq(q.field("createdBy"), args.userEmail))
+      .collect();
+
+    return result;
+  },
+});
+
+// export const DeleteFile = mutation({
+//   args: { id: v.id("pdfFiles") },   // ✅ expect Convex _id, not custom fileId
+//   handler: async (ctx, args) => {
+//     await ctx.db.delete(args.id);
+//   },
+// });
+
+export const DeleteFile = mutation({
+  args: { id: v.id("pdfFiles") },
+  handler: async (ctx, args) => {
+    const file = await ctx.db.get(args.id);
+    if (!file) throw new Error("File not found");
+
+    // Delete related notes
+    const notes = await ctx.db
+      .query("notes")
+      .filter((q) => q.eq(q.field("fileId"), file.fileId))
+      .collect();
+    for (const note of notes) {
+      await ctx.db.delete(note._id);
+    }
+
+    // Delete related documents (look inside metadata.fileId)
+    const docs = await ctx.db
+      .query("documents")
+      .filter((q) => q.eq(q.field("metadata.fileId"), file.fileId))
+      .collect();
+    for (const doc of docs) {
+      await ctx.db.delete(doc._id);
+    }
+
+    // Delete the actual PDF from storage
+    await ctx.storage.delete(file.storageId);
+
+    // Finally delete the file record
+    await ctx.db.delete(args.id);
+
+    return { success: true };
+  },
+});

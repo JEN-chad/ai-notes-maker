@@ -2,6 +2,7 @@ import { Outfit } from "next/font/google";
 import "./globals.css";
 import { Provider } from "./services/provider";
 import ClerkProviderWrapper from "./services/ClerkProviderWrapper";
+import { Toaster } from "@/components/ui/sonner";
 
 const outfit = Outfit({ subsets: ["latin"] });
 
@@ -22,6 +23,15 @@ export default function RootLayout({ children }) {
       <body className={`${outfit.className} antialiased`}>
         <ClerkProviderWrapper>
           <Provider>{children}</Provider>
+          <Toaster
+            position="top-center"
+            offset={65}
+            toastOptions={{
+              classNames: {
+                toast: "bg-white shadow-lg border border-gray-200 text-black",
+              },
+            }}
+          />
         </ClerkProviderWrapper>
       </body>
     </html>

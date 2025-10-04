@@ -14,7 +14,11 @@ export const ingest = action({
   handler: async (ctx, args) => {
     // Map each text chunk to a Document with proper metadata
     const documents = args.splitText.map(
-      (text) => new Document({ pageContent: text, metadata: { fileId: args.fileId } })
+      (text) =>
+        new Document({
+          pageContent: text,
+          metadata: { fileId: args.fileId },
+        })
     );
 
     await ConvexVectorStore.fromDocuments(
@@ -67,7 +71,6 @@ export const ingest = action({
 //   },
 // });
 
-
 //! Top results
 export const search = action({
   args: {
@@ -89,7 +92,9 @@ export const search = action({
     const results = await vectorStore.similaritySearch(args.query, 50);
 
     // 🔹 Filter by fileId
-    const filtered = results.filter((doc) => doc.metadata.fileId === args.fileId);
+    const filtered = results.filter(
+      (doc) => doc.metadata.fileId === args.fileId
+    );
 
     // 🔹 Take top 5 matches and convert to plain objects
     const topResults = filtered.slice(0, 5).map((doc) => ({
