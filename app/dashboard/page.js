@@ -17,6 +17,12 @@ const DashboardPage = () => {
     user ? { userEmail: user.primaryEmailAddress?.emailAddress } : undefined
   );
 
+  const uploadedCount = filesList?.length || 0;
+  const limit = 10;
+
+  // prevent negative numbers
+  const remaining = Math.max(limit - uploadedCount, 0);
+
   // Mutation for deleting file (takes Convex _id)
   const deleteFile = useMutation(api.fileStorage.DeleteFile);
 
@@ -49,7 +55,7 @@ const DashboardPage = () => {
 
                 {/* Clickable file link */}
                 <Link
-                  href={"/workspace/" + file._id}
+                  href={"/workspace/" + file.fileId}
                   className="flex flex-col items-center w-full"
                 >
                   <div className="relative w-14 h-14 mb-2">
@@ -69,12 +75,25 @@ const DashboardPage = () => {
           : [1, 2, 3, 4, 5, 6, 7].map((item) => (
               <div
                 key={`skeleton-${item}`}
-                className="flex flex-col items-center text-center p-2 border rounded-lg bg-slate-200 animate-pulse h-[90px]">
+                className="flex flex-col items-center text-center p-2 border rounded-lg bg-slate-200 animate-pulse h-[90px]"
+              >
                 <div className="w-14 h-14 mb-2 bg-slate-300 rounded-md" />
                 <div className="w-10 h-3 bg-slate-300 rounded-md" />
               </div>
             ))}
       </div>
+      {remaining === 0 && (
+        <div className="absolute bottom-30  left-1/2 -translate-x-1/2 bg-red-100 text-red-700 px-4 py-2 rounded-md shadow-md">
+          <p className="text-xl font-medium">Clear some files 😓 to upload</p>
+        </div>
+      )}
+      {uploadedCount === 0 && (
+        <div className="absolute bottom-30 left-1/2 -translate-x-1/2 bg-green-100 text-green-700 px-4 py-2 rounded-md shadow-md">
+          <p className="text-xl font-medium">
+            Start to upload files 😎 to prepare notes.
+          </p>
+        </div>
+      )}
     </div>
   );
 };

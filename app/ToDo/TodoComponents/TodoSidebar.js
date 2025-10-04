@@ -2,16 +2,14 @@
 
 import React from "react";
 import Image from "next/image";
-import { Button } from "@/components/ui/button";
-import { Layout, ListTodo, Shield } from "lucide-react";
+import { Layout, ListTodo } from "lucide-react";
 import { Progress } from "@/components/ui/progress";
-import UploadPdfDialog from "./UploadPdfDialog";
 import { useUser } from "@clerk/nextjs";
 import { useQuery } from "convex/react";
 import { api } from "@/convex/_generated/api";
 import Link from "next/link";
 
-const Sidebar = () => {
+const TodoSidebar = () => {
   const { user } = useUser();
 
   // Fetch user files
@@ -42,25 +40,18 @@ const Sidebar = () => {
         </span>
       </div>
 
-      {/* Upload + Menu */}
+      {/* Menu */}
       <div className="mt-14 md:mt-8 lg:mt-10">
-        <UploadPdfDialog>
-          <Button
-            className="w-full text-sm sm:text-base md:text-lg lg:text-xl hover:bg-black hover:text-white"
-            disabled={remaining === 0}
-          >
-            {remaining === 0 ? "Limit Reached" : "+ Upload PDF"}
-          </Button>
-        </UploadPdfDialog>
+        <Link href="/dashboard">
+          <div className="flex items-center gap-2 p-3 hover:cursor-pointer hover:bg-slate-100 rounded-lg lg:mt-7 md:mt-5 mt-4">
+            <Layout className="w-5 h-5 sm:w-6 sm:h-6 md:w-7 md:h-7 lg:w-8 lg:h-8" />
+            <span className="text-base sm:text-lg md:text-xl lg:text-2xl">
+              Workspace
+            </span>
+          </div>
+        </Link>
 
-        <div className="flex items-center gap-2 p-3 hover:cursor-pointer hover:bg-slate-100 rounded-lg lg:mt-7 md:mt-5 mt-4">
-          <Layout className="w-5 h-5 sm:w-6 sm:h-6 md:w-7 md:h-7 lg:w-8 lg:h-8" />
-          <span className="text-base sm:text-lg md:text-xl lg:text-2xl">
-            Workspace
-          </span>
-        </div>
-
-        <Link href={"/ToDo"}>
+        <Link href="/ToDo">
           <div className="flex items-center gap-2 p-3 hover:cursor-pointer hover:bg-slate-100 rounded-lg lg:mt-5 md:mt-3 mt-2">
             <ListTodo className="w-5 h-5 sm:w-6 sm:h-6 md:w-7 md:h-7 lg:w-8 lg:h-8" />
             <span className="text-base sm:text-lg md:text-xl lg:text-2xl">
@@ -89,4 +80,4 @@ const Sidebar = () => {
   );
 };
 
-export default Sidebar;
+export default TodoSidebar;
