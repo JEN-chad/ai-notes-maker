@@ -25,8 +25,7 @@ const PdfViewer = ({ fileUrl }) => {
         </div>
       ) : (
         <iframe
-          // key={showToolbar ? "with-toolbar" : "without-toolbar"} // forces reload when toggled
-          loading="lazy"
+          key={showToolbar ? "with-toolbar" : "without-toolbar"} // forces reload when toggled
           src={`${fileUrl}${showToolbar ? "#toolbar=1" : "#toolbar=0"}`}
           className="w-full h-full border-0"
           title="PDF Viewer"
