@@ -13,6 +13,7 @@ import {
   Type,
   Sparkles,
 } from "lucide-react";
+import html2pdf from "html2pdf.js";
 import { useAction, useMutation } from "convex/react";
 import { api } from "@/convex/_generated/api";
 import { useParams } from "next/navigation";
@@ -309,6 +310,46 @@ export const EditorExtension = ({ editor, fileId }) => {
         title="Save Notes"
       >
         Save
+      </button>
+      <button
+        onClick={() => {
+          const content = editor.getHTML();
+
+          // Create a temporary container for styled HTML
+          const element = document.createElement("div");
+          element.innerHTML = `
+      <html>
+        <head>
+          <style>
+            body { font-family: Arial, sans-serif; line-height: 1.6; padding: 20px; }
+            h1, h2, h3 { color: #333; }
+            p { margin-bottom: 10px; }
+            ul, ol { margin-left: 20px; }
+            strong, b { font-weight: bold; }
+            i { font-style: italic; }
+            u { text-decoration: underline; }
+          </style>
+        </head>
+        <body>${content}</body>
+      </html>
+    `;
+
+          // PDF options
+          const opt = {
+            margin: 0.5,
+            filename: "notes.pdf",
+            image: { type: "jpeg", quality: 0.98 },
+            html2canvas: { scale: 2 },
+            jsPDF: { unit: "in", format: "a4", orientation: "portrait" },
+          };
+
+          // Generate and download PDF
+          html2pdf().set(opt).from(element).save();
+        }}
+        className="ml-2 px-3 py-1 rounded border border-gray-500 text-gray-700 hover:bg-black hover:text-white transition"
+        title="Download Notes as PDF"
+      >
+        Download Notes
       </button>
     </div>
   );
