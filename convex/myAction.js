@@ -24,7 +24,7 @@ export const ingest = action({
     await ConvexVectorStore.fromDocuments(
       documents,
       new GoogleGenerativeAIEmbeddings({
-        apiKey: process.env.GOOGLE_GEMINI_API_KEY,
+        apiKey: process.env.GOOGLE_API_KEY,
         model: "text-embedding-004",
         taskType: TaskType.RETRIEVAL_DOCUMENT,
         title: "Document title",

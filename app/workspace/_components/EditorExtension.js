@@ -13,7 +13,7 @@ import {
   Type,
   Sparkles,
 } from "lucide-react";
-import html2pdf from "html2pdf.js";
+// import html2pdf from "html2pdf.js";
 import { useAction, useMutation } from "convex/react";
 import { api } from "@/convex/_generated/api";
 import { useParams } from "next/navigation";
@@ -312,10 +312,10 @@ export const EditorExtension = ({ editor, fileId }) => {
         Save
       </button>
       <button
-        onClick={() => {
+        onClick={async () => {
           const content = editor.getHTML();
 
-          // Create a temporary container for styled HTML
+          // Create temporary container
           const element = document.createElement("div");
           element.innerHTML = `
       <html>
@@ -334,7 +334,9 @@ export const EditorExtension = ({ editor, fileId }) => {
       </html>
     `;
 
-          // PDF options
+          // Dynamic import inside the handler
+          const html2pdf = (await import("html2pdf.js")).default;
+
           const opt = {
             margin: 0.5,
             filename: "notes.pdf",
@@ -343,7 +345,6 @@ export const EditorExtension = ({ editor, fileId }) => {
             jsPDF: { unit: "in", format: "a4", orientation: "portrait" },
           };
 
-          // Generate and download PDF
           html2pdf().set(opt).from(element).save();
         }}
         className="ml-2 px-3 py-1 rounded border border-gray-500 text-gray-700 hover:bg-black hover:text-white transition"
