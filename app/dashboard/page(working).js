@@ -5,8 +5,8 @@ import { useUser } from "@clerk/nextjs";
 import { useQuery, useMutation } from "convex/react";
 import Image from "next/image";
 import Link from "next/link";
-import React, { useState } from "react";
-import { Trash2, Loader2 } from "lucide-react";
+import React from "react";
+import { Trash2 } from "lucide-react";
 
 const DashboardPage = () => {
   const { user } = useUser();
@@ -19,27 +19,18 @@ const DashboardPage = () => {
 
   const uploadedCount = filesList?.length || 0;
   const limit = 10;
+
+  // prevent negative numbers
   const remaining = Math.max(limit - uploadedCount, 0);
 
-  // Use the new batch deletion mutation
-  const deleteBatch = useMutation(api.fileStorage.DeleteFile);
+  // Mutation for deleting file (takes Convex _id)
+  const deleteFile = useMutation(api.fileStorage.DeleteFile);
 
-  // Track which file is being deleted
-  const [deletingId, setDeletingId] = useState(null);
-
-  // 🔹 Handles safe deletion with client-driven batching
   const handleDelete = async (id) => {
-    setDeletingId(id);
     try {
-      let done = false;
-      while (!done) {
-        const res = await deleteBatch({ id });
-        done = res.done;
-      }
+      await deleteFile({ id }); // pass _id, not custom fileId
     } catch (err) {
       console.error("Failed to delete file:", err);
-    } finally {
-      setDeletingId(null);
     }
   };
 
@@ -57,18 +48,9 @@ const DashboardPage = () => {
                 {/* Delete Button */}
                 <button
                   onClick={() => handleDelete(file._id)}
-                  disabled={deletingId === file._id}
-                  className={`absolute top-1 right-1 p-1 rounded-full ${
-                    deletingId === file._id
-                      ? "bg-gray-200 cursor-not-allowed"
-                      : "bg-red-100 hover:bg-red-200"
-                  }`}
+                  className="absolute top-1 right-1 p-1 rounded-full bg-red-100 hover:bg-red-200"
                 >
-                  {deletingId === file._id ? (
-                    <Loader2 size={16} className="animate-spin text-gray-500" />
-                  ) : (
-                    <Trash2 size={16} className="text-red-600" />
-                  )}
+                  <Trash2 size={16} className="text-red-600" />
                 </button>
 
                 {/* Clickable file link */}
@@ -100,10 +82,8 @@ const DashboardPage = () => {
               </div>
             ))}
       </div>
-
-      {/* File upload limit messages */}
       {remaining === 0 && (
-        <div className="absolute bottom-30 left-1/2 -translate-x-1/2 bg-red-100 text-red-700 px-4 py-2 rounded-md shadow-md">
+        <div className="absolute bottom-30  left-1/2 -translate-x-1/2 bg-red-100 text-red-700 px-4 py-2 rounded-md shadow-md">
           <p className="text-xl font-medium">Clear some files 😓 to upload</p>
         </div>
       )}

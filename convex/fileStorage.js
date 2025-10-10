@@ -110,43 +110,41 @@ export const GetUserFiles = query({
 //   },
 // });
 
-export const DeleteFile = mutation({
-  args: { id: v.id("pdfFiles") },
+export const DeleteFile =  mutation({
+  args: { id: v.id("pdfFiles"), limit: v.optional(v.number()) },
   handler: async (ctx, args) => {
-    // 1️⃣ Fetch the file record
     const file = await ctx.db.get(args.id);
     if (!file) throw new Error("File not found");
-
     const fileId = file.fileId;
+    const limit = args.limit ?? 25;
 
-    // 2️⃣ Helper to delete related records in batches (safe for large data)
-    async function deleteRelatedRecords(table, fieldPath) {
-      while (true) {
-        const batch = await ctx.db
-          .query(table)
-          .filter((q) => q.eq(q.field(fieldPath), fileId))
-          .take(50); // fetch small batch each time
+    // Delete a batch of related notes
+    const notes = await ctx.db
+      .query("notes")
+      .filter((q) => q.eq(q.field("fileId"), fileId))
+      .take(limit);
 
-        if (batch.length === 0) break;
-
-        // Delete in parallel safely
-        await Promise.allSettled(batch.map((item) => ctx.db.delete(item._id)));
-      }
+    for (const note of notes) {
+      await ctx.db.delete(note._id);
     }
 
-    // 3️⃣ Delete related notes & documents
-    await deleteRelatedRecords("notes", "fileId");
-    await deleteRelatedRecords("documents", "metadata.fileId");
+    // Delete a batch of related documents
+    const docs = await ctx.db
+      .query("documents")
+      .filter((q) => q.eq(q.field("metadata.fileId"), fileId))
+      .take(limit);
 
-    // 4️⃣ Delete the PDF file from storage
-    if (file.storageId) {
-      await ctx.storage.delete(file.storageId);
+    for (const doc of docs) {
+      await ctx.db.delete(doc._id);
     }
 
-    // 5️⃣ Delete the main file record
-    await ctx.db.delete(args.id);
+    // If everything’s deleted, remove the file and its blob
+    if (notes.length === 0 && docs.length === 0) {
+      if (file.storageId) await ctx.storage.delete(file.storageId);
+      await ctx.db.delete(args.id);
+      return { done: true };
+    }
 
-    return { success: true };
+    return { done: false };
   },
 });
-
