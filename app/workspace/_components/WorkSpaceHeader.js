@@ -1,11 +1,25 @@
+"use client";
+
 import { UserButton } from "@clerk/nextjs";
 import Image from "next/image";
 import Link from "next/link";
 import React from "react";
+import { ArrowLeft } from "lucide-react";
+import { useRouter } from "next/navigation";
 
 const WorkSpaceHeader = ({ fileName }) => {
+  const router = useRouter();
+
   return (
     <div className="relative flex items-center justify-between shadow-md p-4">
+      {/* Mobile Back Button */}
+       <Link
+        href={"/dashboard"}
+        className="flex sm:hidden items-center justify-center p-2 rounded-full hover:bg-gray-200 transition"
+      >
+        <ArrowLeft className="w-6 h-6 text-gray-700" />
+      </Link>
+
       {/* Left Logo — hidden on mobile */}
       <Link href={"/dashboard"} className="hidden sm:flex items-center gap-2 md:gap-3">
         <Image
