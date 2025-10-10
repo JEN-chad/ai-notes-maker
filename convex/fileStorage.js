@@ -74,36 +74,79 @@ export const GetUserFiles = query({
 //   },
 // });
 
+
+//! Working one old
+// export const DeleteFile = mutation({
+//   args: { id: v.id("pdfFiles") },
+//   handler: async (ctx, args) => {
+//     const file = await ctx.db.get(args.id);
+//     if (!file) throw new Error("File not found");
+
+//     // Delete related notes
+//     const notes = await ctx.db
+//       .query("notes")
+//       .filter((q) => q.eq(q.field("fileId"), file.fileId))
+//       .collect();
+//     for (const note of notes) {
+//       await ctx.db.delete(note._id);
+//     }
+
+//     // Delete related documents (look inside metadata.fileId)
+//     const docs = await ctx.db
+//       .query("documents")
+//       .filter((q) => q.eq(q.field("metadata.fileId"), file.fileId))
+//       .collect();
+//     for (const doc of docs) {
+//       await ctx.db.delete(doc._id);
+//     }
+
+//     // Delete the actual PDF from storage
+//     await ctx.storage.delete(file.storageId);
+
+//     // Finally delete the file record
+//     await ctx.db.delete(args.id);
+
+//     return { success: true };
+//   },
+// });
+
 export const DeleteFile = mutation({
   args: { id: v.id("pdfFiles") },
   handler: async (ctx, args) => {
+    // 1️⃣ Fetch the file record
     const file = await ctx.db.get(args.id);
     if (!file) throw new Error("File not found");
 
-    // Delete related notes
-    const notes = await ctx.db
-      .query("notes")
-      .filter((q) => q.eq(q.field("fileId"), file.fileId))
-      .collect();
-    for (const note of notes) {
-      await ctx.db.delete(note._id);
+    const fileId = file.fileId;
+
+    // 2️⃣ Helper to delete related records in batches (safe for large data)
+    async function deleteRelatedRecords(table, fieldPath) {
+      while (true) {
+        const batch = await ctx.db
+          .query(table)
+          .filter((q) => q.eq(q.field(fieldPath), fileId))
+          .take(50); // fetch small batch each time
+
+        if (batch.length === 0) break;
+
+        // Delete in parallel safely
+        await Promise.allSettled(batch.map((item) => ctx.db.delete(item._id)));
+      }
     }
 
-    // Delete related documents (look inside metadata.fileId)
-    const docs = await ctx.db
-      .query("documents")
-      .filter((q) => q.eq(q.field("metadata.fileId"), file.fileId))
-      .collect();
-    for (const doc of docs) {
-      await ctx.db.delete(doc._id);
+    // 3️⃣ Delete related notes & documents
+    await deleteRelatedRecords("notes", "fileId");
+    await deleteRelatedRecords("documents", "metadata.fileId");
+
+    // 4️⃣ Delete the PDF file from storage
+    if (file.storageId) {
+      await ctx.storage.delete(file.storageId);
     }
 
-    // Delete the actual PDF from storage
-    await ctx.storage.delete(file.storageId);
-
-    // Finally delete the file record
+    // 5️⃣ Delete the main file record
     await ctx.db.delete(args.id);
 
     return { success: true };
   },
 });
+
