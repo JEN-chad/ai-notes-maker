@@ -57,8 +57,21 @@ export const TextEditor = ({ fileId }) => {
       </div>
 
       {/* Editor Content */}
-      <div className="flex-1 overflow-scroll">
-        {editor && <EditorContent editor={editor} />}
+      {/* <div className="flex-1 overflow-scroll">
+        {editor && (
+          <EditorContent
+            editor={editor}
+            className="prose max-w-none w-full text-base sm:text-lg md:text-[1rem] leading-relaxed p-2 sm:p-3 overflow-x-hidden"
+          />
+        )}
+      </div> */}
+      <div className="w-full max-w-full overflow-x-hidden text-wrap">
+        {editor && (
+          <EditorContent
+            editor={editor}
+            className="ProseMirror w-full max-w-full overflow-x-hidden"
+          />
+        )}
       </div>
     </div>
   );
