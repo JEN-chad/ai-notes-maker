@@ -12,6 +12,12 @@ import { useQuery } from "convex/react";
 import { api } from "@/convex/_generated/api";
 import { useEffect, useState } from "react";
 
+// 🧩 Import TipTap table extensions
+import Table from "@tiptap/extension-table";
+import TableRow from "@tiptap/extension-table-row";
+import TableCell from "@tiptap/extension-table-cell";
+import TableHeader from "@tiptap/extension-table-header";
+
 export const TextEditor = ({ fileId }) => {
   const notes = useQuery(api.notes.GetNotes, { fileId });
   const [isMobile, setIsMobile] = useState(false);
@@ -27,6 +33,15 @@ export const TextEditor = ({ fileId }) => {
   const editor = useEditor({
     extensions: [
       StarterKit.configure({ heading: false }),
+
+      // 🧩 Add table support
+      Table.configure({
+        resizable: true,
+      }),
+      TableRow,
+      TableHeader,
+      TableCell,
+
       Underline,
       FontSize,
       Highlight,
