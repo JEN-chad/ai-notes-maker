@@ -29,6 +29,7 @@ export const TextEditor = ({ fileId }) => {
     window.addEventListener("resize", handleResize);
     return () => window.removeEventListener("resize", handleResize);
   }, []);
+  
 
   const editor = useEditor({
     extensions: [
