@@ -69,13 +69,14 @@ export const EditorExtension = ({ editor, fileId }) => {
         "   - 2 marks: Give a very short definition or summary in 2–3 sentences.\n" +
         "9) Maintain exam readability — use short paragraphs, clear logical flow, and well-separated sections.\n" +
         "10) If the question asks for comparison or differences, present them neatly in a <table>.\n" +
-        "11) Always focus on clarity, flow, and conceptual accuracy over excessive length.\n\n" +
+        "11) Always focus on clarity, flow, and conceptual accuracy over excessive length.\n" +
+        "12) Never mention or refer to any 'provided document', 'given text', or 'reference material' in the answer — only use the content naturally.\n\n" +
         "Question: " +
         selectedText +
         "\n\n" +
-        "Document content: " +
+        "Use the following reference notes to prepare the final answer (do not mention them directly):\n" +
         allUnformattedAnswer;
-        
+
       const AiModelResult = await chatSession.sendMessage(PROMPT);
       const finalAns = await AiModelResult.response.text();
 
