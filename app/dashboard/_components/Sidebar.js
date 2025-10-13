@@ -53,7 +53,7 @@ const Sidebar = () => {
           </Button>
         </UploadPdfDialog>
 
-        <div className="flex items-center gap-2 p-3 hover:cursor-pointer hover:bg-slate-100 rounded-lg lg:mt-7 md:mt-5 mt-4">
+        <div className="flex items-center gap-2 p-3 hover:cursor-pointer bg-slate-100 rounded-lg lg:mt-7 md:mt-5 mt-4">
           <Layout className="w-5 h-5 sm:w-6 sm:h-6 md:w-7 md:h-7 lg:w-8 lg:h-8" />
           <span className="text-base sm:text-lg md:text-xl lg:text-2xl">
             Workspace
@@ -61,7 +61,7 @@ const Sidebar = () => {
         </div>
 
         <Link href={"/ToDo"}>
-          <div className="flex items-center gap-2 p-3 hover:cursor-pointer hover:bg-slate-100 rounded-lg lg:mt-5 md:mt-3 mt-2">
+          <div className="flex items-center gap-2 p-3 hover:cursor-pointer hover:bg-slate-200 rounded-lg lg:mt-5 md:mt-3 mt-2">
             <ListTodo className="w-5 h-5 sm:w-6 sm:h-6 md:w-7 md:h-7 lg:w-8 lg:h-8" />
             <span className="text-base sm:text-lg md:text-xl lg:text-2xl">
               ToDo
@@ -79,7 +79,7 @@ const Sidebar = () => {
         <h1 className="md:text-xl text-sm">
           {remaining} out of {limit} Left
         </h1>
-        <p className="lg:text-xl md:text-[17px] text-xs text-gray-400">
+        <p className="lg:text-xl md:text-[17px] text-xs text-gray-500">
           {remaining === 0
             ? "Clear some files to upload more"
             : `uploaded PDF Files ${uploadedCount} `}

@@ -14,7 +14,7 @@ const Header = () => {
   };
 
   return (
-    <div className="shadow-md flex p-5 justify-end">
+    <div className=" flex p-5 justify-end">
       {/* UserButton UI but with custom sign out */}
       <UserButton
         afterSignOutUrl="/sign-in"

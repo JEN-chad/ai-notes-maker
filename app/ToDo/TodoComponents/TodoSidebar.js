@@ -27,23 +27,28 @@ const TodoSidebar = () => {
   return (
     <div className="shadow-xl h-screen p-4 md:p-7 flex flex-col relative">
       {/* Logo + Name */}
-      <div className="flex items-center justify-center gap-2 md:gap-3">
-        <Image
-          src="/logo.png"
-          alt="logo"
-          width={50}
-          height={50}
-          className="sm:w-12 sm:h-12 md:w-16 md:h-16 lg:w-18 lg:h-18"
-        />
-        <span className="text-black font-semibold text-xl sm:text-2xl md:text-3xl lg:text-3xl">
-          SemSmart
-        </span>
+      <div>
+        <Link
+          href={"/dashboard"}
+          className="flex items-center justify-center gap-2 md:gap-3"
+        >
+          <Image
+            src="/logo.png"
+            alt="logo"
+            width={50}
+            height={50}
+            className="sm:w-12 sm:h-12 md:w-16 md:h-16 lg:w-18 lg:h-18"
+          />
+          <span className="text-black font-semibold text-xl sm:text-2xl md:text-3xl lg:text-3xl">
+            SemSmart
+          </span>
+        </Link>
       </div>
 
       {/* Menu */}
       <div className="mt-14 md:mt-8 lg:mt-10">
         <Link href="/dashboard">
-          <div className="flex items-center gap-2 p-3 hover:cursor-pointer hover:bg-slate-100 rounded-lg lg:mt-7 md:mt-5 mt-4">
+          <div className="flex items-center gap-2 p-3 hover:cursor-pointer hover:bg-slate-200 rounded-lg lg:mt-7 md:mt-5 mt-4">
             <Layout className="w-5 h-5 sm:w-6 sm:h-6 md:w-7 md:h-7 lg:w-8 lg:h-8" />
             <span className="text-base sm:text-lg md:text-xl lg:text-2xl">
               Workspace
@@ -52,7 +57,7 @@ const TodoSidebar = () => {
         </Link>
 
         <Link href="/ToDo">
-          <div className="flex items-center gap-2 p-3 hover:cursor-pointer hover:bg-slate-100 rounded-lg lg:mt-5 md:mt-3 mt-2">
+          <div className="flex items-center gap-2 p-3 hover:cursor-pointer bg-slate-100 rounded-lg lg:mt-5 md:mt-3 mt-2">
             <ListTodo className="w-5 h-5 sm:w-6 sm:h-6 md:w-7 md:h-7 lg:w-8 lg:h-8" />
             <span className="text-base sm:text-lg md:text-xl lg:text-2xl">
               ToDo
@@ -70,7 +75,7 @@ const TodoSidebar = () => {
         <h1 className="md:text-xl text-sm">
           {remaining} out of {limit} Left
         </h1>
-        <p className="lg:text-xl md:text-[17px] text-xs text-gray-400">
+        <p className="lg:text-xl md:text-[17px] text-xs text-gray-500">
           {remaining === 0
             ? "Clear some files to upload more"
             : `uploaded PDF Files ${uploadedCount} `}

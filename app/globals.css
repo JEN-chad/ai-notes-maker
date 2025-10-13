@@ -209,6 +209,10 @@
 .ProseMirror mark {
   background-color: #fff2ac;
 }
+p, ul, ol, table {
+  page-break-inside: avoid;
+}
+
 
 /* Responsive adjustments */
 @media (max-width: 768px) {
